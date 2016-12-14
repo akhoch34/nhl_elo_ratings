@@ -1,40 +1,42 @@
 import math
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 import urllib
 import datetime
 import operator
 
 
-ELO = {'Anaheim Ducks':1500,
-               'Arizona Coyotes':1500,
-               'Boston Bruins':1500,
-               'Buffalo Sabres':1500,
-               'Calgary Flames':1500,
-               'Carolina Hurricanes':1500,
-               'Chicago Blackhawks':1500,
-               'Colorado Avalanche':1500,
-               'Columbus Blue Jackets':1500,
-               'Dallas Stars':1500,
-               'Detroit Red Wings':1500,
-               'Edmonton Oilers':1500,
-               'Florida Panthers':1500,
-               'Los Angeles Kings':1500,
-               'Minnesota Wild':1500,
-               'Montreal Canadiens':1500,
-               'Nashville Predators':1500,
-               'New Jersey Devils':1500,
-               'New York Islanders':1500,
-               'New York Rangers':1500,
-               'Philadelphia Flyers':1500,
-               'Pittsburgh Penguins':1500,
-               'Ottawa Senators':1500,
-               'San Jose Sharks':1500,
-               'St. Louis Blues':1500,
-               'Tampa Bay Lightning':1500,
-               'Toronto Maple Leafs':1500,
-               'Vancouver Canucks':1500,
-               'Washington Capitals':1500,
-               'Winnipeg Jets':1500}
+
+
+ELO = {'Anaheim Ducks':1532,
+               'Arizona Coyotes':1468,
+               'Boston Bruins':1503,
+               'Buffalo Sabres':1468,
+               'Calgary Flames':1467,
+               'Carolina Hurricanes':1466,
+               'Chicago Blackhawks':1529,
+               'Colorado Avalanche':1486,
+               'Columbus Blue Jackets':1467,
+               'Dallas Stars':1544,
+               'Detroit Red Wings':1499,
+               'Edmonton Oilers':1441,
+               'Florida Panthers':1529,
+               'Los Angeles Kings':1530,
+               'Minnesota Wild':1483,
+               'Montreal Canadiens':1481,
+               'Nashville Predators':1502,
+               'New Jersey Devils':1483,
+               'New York Islanders':1524,
+               'New York Rangers':1529,
+               'Philadelphia Flyers':1508,
+               'Pittsburgh Penguins':1552,
+               'Ottawa Senators':1484,
+               'San Jose Sharks':1528,
+               'St. Louis Blues':1554,
+               'Tampa Bay Lightning':1526,
+               'Toronto Maple Leafs':1436,
+               'Vancouver Canucks':1445,
+               'Washington Capitals':1567,
+               'Winnipeg Jets':1469}
 
 correct_wp = []
 incorrect_wp = []
@@ -50,26 +52,27 @@ def calcK(margin = 1):
 correct = 0
 incorrect = 0
 
-site = urllib.urlopen('http://www.hockey-reference.com/leagues/NHL_2016_games.html').read()
+site = urllib.urlopen('http://www.hockey-reference.com/leagues/NHL_2017_games.html').read()
 soup = BeautifulSoup(site)
 
 table = soup.find('table')
 table_body = table.find('tbody')
 games = table_body.findAll('tr')
-start_date = datetime.datetime.strptime("2016-1-1", "%Y-%m-%d")
+start_date = datetime.datetime.strptime("2016-12-1", "%Y-%m-%d")
 for game in games:
+    dateRow = game.findAll('th')
     cols = game.findAll('td')
-    date = str(cols[0].text).strip()  # Get Date of Game
+    date = str(dateRow[0].text).strip()  # Get Date of Game
     date = datetime.datetime.strptime(date, "%Y-%m-%d")  # Convert string to DateTime
-    home = str(cols[3].text).strip() # Get Home Team
-    visitor = str(cols[1].text).strip() # Get Visitor Team
+    home = str(cols[2].text).strip() # Get Home Team
+    visitor = str(cols[0].text).strip() # Get Visitor Team
     #Calculate Elo Differential
     elo_diff = ELO[home] - ELO[visitor]
     prob_h = round(1.0/(1.0 + math.pow(10, -1*elo_diff/400)), 4) #Calculate the Probability of the home team winning
     prob_v = 1 - prob_h
     if date.date() < datetime.date.today(): # Game has been played, Update Elo Ratings
-        visitor_goals = int(str(cols[2].text).strip()) # Get Visitor Score
-        home_goals = int(str(cols[4].text).strip()) # Get Home Score
+        visitor_goals = int(str(cols[1].text).strip()) # Get Visitor Score
+        home_goals = int(str(cols[3].text).strip()) # Get Home Score
         mov = abs(home_goals - visitor_goals)
         if home_goals > visitor_goals: #Home Wins
             if date.date() > start_date.date():# and (prob_h > 0.60 or prob_v > 0.60):
