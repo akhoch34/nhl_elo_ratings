@@ -4,38 +4,40 @@ import requests
 import datetime
 import operator
 
-ELO = {'Anaheim Ducks':1500,
-               'Boston Bruins':1500,
-               'Buffalo Sabres':1500,
-               'Calgary Flames':1500,
-               'Carolina Hurricanes':1500,
-               'Chicago Blackhawks':1500,
-               'Colorado Avalanche':1500,
-               'Columbus Blue Jackets':1500,
-               'Dallas Stars':1500,
-               'Detroit Red Wings':1500,
-               'Edmonton Oilers':1500,
-               'Florida Panthers':1500,
-               'Los Angeles Kings':1500,
-               'Minnesota Wild':1500,
-               'Montreal Canadiens':1500,
-               'Nashville Predators':1500,
-               'New Jersey Devils':1500,
-               'New York Islanders':1500,
-               'New York Rangers':1500,
-               'Philadelphia Flyers':1500,
-               'Pittsburgh Penguins':1500,
-               'Ottawa Senators':1500,
-               'San Jose Sharks':1500,
-               'Seattle Kraken':1500,
-               'St. Louis Blues':1500,
-               'Tampa Bay Lightning':1500,
-               'Toronto Maple Leafs':1500,
-               'Utah Hockey Club':1500,
-               'Vancouver Canucks':1500,
-               'Vegas Golden Knights':1500,
-               'Washington Capitals':1500,
-               'Winnipeg Jets':1500}
+ELO = {
+        'Anaheim Ducks': 1418, 
+        'Boston Bruins': 1528, 
+        'Buffalo Sabres': 1497, 
+        'Calgary Flames': 1482, 
+        'Carolina Hurricanes': 1565, 
+        'Chicago Blackhawks': 1400, 
+        'Colorado Avalanche': 1550, 
+        'Columbus Blue Jackets': 1430, 
+        'Dallas Stars': 1562, 
+        'Detroit Red Wings': 1499, 
+        'Edmonton Oilers': 1541, 
+        'Florida Panthers': 1560, 
+        'Los Angeles Kings': 1511, 
+        'Minnesota Wild': 1489, 
+        'Montreal Canadiens': 1437, 
+        'Nashville Predators': 1534, 
+        'New Jersey Devils': 1479, 
+        'New York Islanders': 1499, 
+        'New York Rangers': 1574, 
+        'Philadelphia Flyers': 1476, 
+        'Pittsburgh Penguins': 1488, 
+        'Ottawa Senators': 1484, 
+        'San Jose Sharks': 1380, 
+        'Seattle Kraken': 1461, 
+        'St. Louis Blues': 1509, 
+        'Tampa Bay Lightning': 1526, 
+        'Toronto Maple Leafs': 1528, 
+        'Utah Hockey Club': 1474, 
+        'Vancouver Canucks': 1540, 
+        'Vegas Golden Knights': 1517, 
+        'Washington Capitals': 1502, 
+        'Winnipeg Jets': 1560
+    }
 
 correct_wp = []
 incorrect_wp = []
@@ -58,7 +60,7 @@ soup = BeautifulSoup(response.content, 'html.parser')
 table = soup.find('table')
 table_body = table.find('tbody')
 games = table_body.findAll('tr')
-start_date = datetime.datetime.strptime("2024-10-4", "%Y-%m-%d")
+evaluation_start_date = datetime.datetime.strptime("2025-1-1", "%Y-%m-%d")
 # print(games)
 for game in games:
     dateRow = game.findAll('th')
@@ -80,7 +82,7 @@ for game in games:
         home_goals = int(str(cols[4].text).strip()) # Get Home Score
         mov = abs(home_goals - visitor_goals)
         if home_goals > visitor_goals: #Home Wins
-            if date.date() > start_date.date():# and (prob_h > 0.60 or prob_v > 0.60):
+            if date.date() >= evaluation_start_date.date():# and (prob_h > 0.60 or prob_v > 0.60):
                 if prob_h > prob_v:
                     correct_wp.append(prob_h)
                     correct += 1
@@ -91,7 +93,7 @@ for game in games:
             ELO[home] += wFactor
             ELO[visitor] -= wFactor
         else: #Visitor Wins
-            if date.date() > start_date.date():# and (prob_h > 0.60 or prob_v > 0.60):
+            if date.date() >= evaluation_start_date.date():# and (prob_h > 0.60 or prob_v > 0.60):
                 if prob_h < prob_v:
                     correct_wp.append(prob_v)
                     correct += 1
@@ -115,9 +117,7 @@ for game in games:
 total = float(correct + incorrect)
 
 
-print("\n\nModel is correct " + str(100*(correct/total)) +"% of the time")
+print("\n\nModel is correct " + str(round(100*(correct/total),2)) +"% of the time")
 
 sorted_elo = sorted(ELO.items(), key = operator.itemgetter(1), reverse=True)
 print("\n\nCurrent Rankings: " + str(sorted_elo))
-
-
