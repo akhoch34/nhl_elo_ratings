@@ -82,7 +82,7 @@ for game in games:
         home_goals = int(str(cols[4].text).strip()) # Get Home Score
         mov = abs(home_goals - visitor_goals)
         if home_goals > visitor_goals: #Home Wins
-            if date.date() >= evaluation_start_date.date():# and (prob_h > 0.60 or prob_v > 0.60):
+            if date.date() >= evaluation_start_date.date(): # (prob_h > 0.60 or prob_v > 0.60):
                 if prob_h > prob_v:
                     correct_wp.append(prob_h)
                     correct += 1
@@ -93,7 +93,7 @@ for game in games:
             ELO[home] += wFactor
             ELO[visitor] -= wFactor
         else: #Visitor Wins
-            if date.date() >= evaluation_start_date.date():# and (prob_h > 0.60 or prob_v > 0.60):
+            if date.date() >= evaluation_start_date.date(): # (prob_h > 0.60 or prob_v > 0.60):
                 if prob_h < prob_v:
                     correct_wp.append(prob_v)
                     correct += 1
