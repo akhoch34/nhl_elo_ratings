@@ -60,7 +60,7 @@ soup = BeautifulSoup(response.content, 'html.parser')
 table = soup.find('table')
 table_body = table.find('tbody')
 games = table_body.findAll('tr')
-evaluation_start_date = datetime.datetime.strptime("2025-1-1", "%Y-%m-%d")
+evaluation_start_date = datetime.datetime.strptime("2025-2-1", "%Y-%m-%d")
 # print(games)
 for game in games:
     dateRow = game.findAll('th')
